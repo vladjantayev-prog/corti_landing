@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Корти — AI-сервис: счётчик калорий и конструктор питания</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg2: #11182d;
+      --card: rgba(255,255,255,0.08);
+      --card-border: rgba(255,255,255,0.14);
+      --text: #eef2ff;
+      --muted: #b9c1d9;
+      --accent: #7dd3fc;
+      --accent2: #a78bfa;
+      --success: #86efac;
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --radius: 24px;
+      --max: 1180px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(125, 211, 252, 0.14), transparent 26%),
+        radial-gradient(circle at 80% 10%, rgba(167, 139, 250, 0.15), transparent 24%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      line-height: 1.55;
+    }
+    .wrap { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+    .section { padding: 72px 0; }
+    .hero { padding: 36px 0 72px; }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; padding: 16px 0 8px;
+    }
+    .brand {
+      display: inline-flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .2px;
+    }
+    .logo {
+      width: 40px; height: 40px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: var(--shadow);
+      display: grid; place-items: center; color: #08111f; font-weight: 900;
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: 1.12fr .88fr; gap: 28px; align-items: center;
+      margin-top: 28px;
+    }
+    .eyebrow {
+      display: inline-flex; gap: 8px; align-items: center; padding: 8px 12px;
+      border-radius: 999px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+      color: var(--muted); font-size: 14px;
+    }
+    h1 {
+      margin: 16px 0 18px; font-size: clamp(34px, 5vw, 62px); line-height: 1.02; letter-spacing: -.04em;
+    }
+    .lead {
+      color: var(--muted); font-size: clamp(17px, 2.2vw, 20px); max-width: 760px;
+    }
+    .hero-note { margin-top: 18px; color: var(--muted); font-size: 15px; }
+    .glass {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+    }
+    .dashboard { padding: 22px; position: relative; overflow: hidden; }
+    .dashboard:before {
+      content: ""; position: absolute; inset: -20% auto auto -10%; width: 240px; height: 240px;
+      background: radial-gradient(circle, rgba(125,211,252,.16), transparent 60%);
+      pointer-events: none;
+    }
+    .phone {
+      border-radius: 28px; padding: 14px; background: rgba(8,17,31,.55); border: 1px solid rgba(255,255,255,.1);
+    }
+    .screen {
+      border-radius: 22px; overflow: hidden; background: linear-gradient(180deg, #0f172a, #131c35);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+    .screen-top { padding: 18px 18px 12px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .screen-title { font-size: 14px; color: #c7d2fe; margin-bottom: 10px; }
+    .big { font-size: 28px; font-weight: 800; letter-spacing: -.03em; }
+    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+    .metric { padding: 12px; border-radius: 16px; background: rgba(255,255,255,.05); }
+    .metric span { display: block; color: #93a0c8; font-size: 12px; }
+    .metric strong { font-size: 18px; }
+    .feed { padding: 14px; display: grid; gap: 12px; }
+    .row { display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; align-items: center; }
+    .thumb { height: 56px; border-radius: 14px; background: linear-gradient(135deg, #fdba74, #fb7185); }
+    .thumb.alt { background: linear-gradient(135deg, #86efac, #7dd3fc); }
+    .thumb.third { background: linear-gradient(135deg, #f9a8d4, #c4b5fd); }
+    .row-title { font-weight: 700; }
+    .row-sub { color: #9aa5c7; font-size: 13px; }
+    .tag { padding: 8px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: rgba(255,255,255,.08); }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 34px; }
+    .stat { padding: 20px; }
+    .stat strong { display: block; font-size: 26px; margin-bottom: 4px; }
+    .stat span { color: var(--muted); }
+    h2 {
+      font-size: clamp(28px, 4vw, 44px); line-height: 1.08; margin: 0 0 14px; letter-spacing: -.03em;
+    }
+    .sub { color: var(--muted); max-width: 920px; font-size: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 30px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 28px; }
+    .card { padding: 24px; }
+    .card h3 { margin: 0 0 10px; font-size: 22px; letter-spacing: -.02em; }
+    .card p, .card li { color: var(--muted); }
+    .card ul { margin: 12px 0 0 18px; padding: 0; }
+    .icon {
+      width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center;
+      background: rgba(125,211,252,.12); color: var(--accent); font-weight: 900; margin-bottom: 14px;
+      border: 1px solid rgba(125,211,252,.18);
+    }
+    .steps { display: grid; gap: 14px; margin-top: 26px; }
+    .step { display: grid; grid-template-columns: 72px 1fr; gap: 18px; align-items: start; padding: 22px; }
+    .step-no {
+      width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center;
+      background: linear-gradient(135deg, rgba(125,211,252,.18), rgba(167,139,250,.18));
+      border: 1px solid rgba(255,255,255,.12); font-size: 22px; font-weight: 800;
+    }
+    .step h4 { margin: 4px 0 8px; font-size: 22px; }
+    .step p { margin: 0; color: var(--muted); }
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 28px; }
+    .compare .card { min-height: 100%; }
+    .soft h3 { color: #c4b5fd; }
+    .good h3 { color: var(--success); }
+    .final { text-align: center; padding: 34px; margin-top: 28px; }
+    .final p { color: var(--muted); max-width: 820px; margin: 12px auto 0; }
+    footer { padding: 30px 0 50px; color: #98a3c8; font-size: 14px; text-align: center; }
+    @media (max-width: 980px) {
+      .hero-grid, .grid-3, .grid-2, .stats, .compare { grid-template-columns: 1fr; }
+      .hero { padding-bottom: 42px; }
+      .section { padding: 54px 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap hero">
+    <div class="nav">
+      <div class="brand">
+        <div class="logo">K</div>
+        <div>
+          <div>Корти</div>
+          <div style="font-size:12px;color:#9aa5c7;font-weight:600;">AI-сервис: счётчик калорий и конструктор питания</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow">Питание без ручного подсчёта и хаоса в голове</div>
+        <h1>Сервис, который помогает понять, что вы реально едите, и собрать питание проще</h1>
+        <div class="lead">
+          Корти — это AI-сервис, который помогает человеку видеть дневной баланс по калориям и БЖУ, фиксировать еду по фото или текстом, собирать приёмы пищи через конструктор и лучше понимать, почему вес стоит или двигается.
+        </div>
+        <div class="hero-note">Подходит для личного использования, для сопровождения клиентов и как дополнительный digital-инструмент в фитнесе и wellness.</div>
+      </div>
+
+      <div class="dashboard glass">
+        <div class="phone">
+          <div class="screen">
+            <div class="screen-top">
+              <div class="screen-title">Корти • дневной ориентир</div>
+              <div class="big">1 850 ккал</div>
+              <div style="color:#9aa5c7;margin-top:6px;">Цель: снижение веса • Питание без ручного подсчёта</div>
+              <div class="metrics">
+                <div class="metric"><span>Белки</span><strong>118 г</strong></div>
+                <div class="metric"><span>Жиры</span><strong>61 г</strong></div>
+                <div class="metric"><span>Углеводы</span><strong>176 г</strong></div>
+              </div>
+            </div>
+            <div class="feed">
+              <div class="row">
+                <div class="thumb"></div>
+                <div>
+                  <div class="row-title">Фото еды</div>
+                  <div class="row-sub">Сервис примерно считает калории и БЖУ</div>
+                </div>
+                <div class="tag">428 ккал</div>
+              </div>
+              <div class="row">
+                <div class="thumb alt"></div>
+                <div>
+                  <div class="row-title">Конструктор питания</div>
+                  <div class="row-sub">Собрать приём пищи из обычных продуктов</div>
+                </div>
+                <div class="tag">План</div>
+              </div>
+              <div class="row">
+                <div class="thumb third"></div>
+                <div>
+                  <div class="row-title">Отметка сна и привычек</div>
+                  <div class="row-sub">Понимать связь между режимом и питанием</div>
+                </div>
+                <div class="tag">Фокус</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat glass"><strong>+ ясность</strong><span>Человек видит реальную картину дня, а не гадает по ощущениям</span></div>
+      <div class="stat glass"><strong>+ удобство</strong><span>Не нужно вручную считать и вспоминать всё вечером</span></div>
+      <div class="stat glass"><strong>+ контроль</strong><span>Проще понять, где перебор, а где недобор</span></div>
+      <div class="stat glass"><strong>+ удержание</strong><span>Легче держаться в процессе между тренировками и обычной жизнью</span></div>
+    </div>
+  </div>
+
+  <section class="section" id="how">
+    <div class="wrap">
+      <h2>Что даёт Корти</h2>
+      <div class="sub">Корти закрывает главную бытовую проблему: человек хочет питаться лучше, но не хочет жить с калькулятором, таблицами и постоянным ручным учётом. Сервис делает этот процесс намного проще и понятнее.</div>
+      <div class="grid-3">
+        <div class="card glass">
+          <div class="icon">01</div>
+          <h3>Помогает увидеть реальную картину питания</h3>
+          <p>Не по ощущениям, а по факту: что было съедено за день, где набежали лишние калории, где не хватает сытости и почему вес может стоять.</p>
+        </div>
+        <div class="card glass">
+          <div class="icon">02</div>
+          <h3>Снимает часть рутины</h3>
+          <p>Не нужно вручную записывать всё в таблицы и потом пересчитывать. Человек просто фиксирует еду по фото или текстом и получает ориентир.</p>
+        </div>
+        <div class="card glass">
+          <div class="icon">03</div>
+          <h3>Помогает собирать питание спокойнее</h3>
+          <p>Через конструктор питания можно заранее понять, что съесть, как уложиться в дневной план и как не сорваться вечером на хаос и перекусы.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>Основные функции сервиса</h2>
+      <div class="steps">
+        <div class="step glass">
+          <div class="step-no">1</div>
+          <div>
+            <h4>Анкета и расчёт дневного ориентира</h4>
+            <p>Пользователь вводит вес, рост, активность и цель. На основе этого сервис показывает ориентир по калориям и БЖУ.</p>
+          </div>
+        </div>
+        <div class="step glass">
+          <div class="step-no">2</div>
+          <div>
+            <h4>Фиксация еды по фото или текстом</h4>
+            <p>Можно сфотографировать еду или просто написать, что было съедено. Корти примерно оценивает калории и состав.</p>
+          </div>
+        </div>
+        <div class="step glass">
+          <div class="step-no">3</div>
+          <div>
+            <h4>Дневной баланс по калориям и БЖУ</h4>
+            <p>Человек видит, сколько уже набрал за день, где у него перебор, а где, наоборот, не хватает белка, сытости или структуры.</p>
+          </div>
+        </div>
+        <div class="step glass">
+          <div class="step-no">4</div>
+          <div>
+            <h4>Конструктор питания</h4>
+            <p>Если не хочется придумывать всё самому, сервис помогает собрать нормальный приём пищи или день питания из обычных продуктов.</p>
+          </div>
+        </div>
+        <div class="step glass">
+          <div class="step-no">5</div>
+          <div>
+            <h4>Фокус на сне и привычках</h4>
+            <p>Кроме самой еды, можно держать в поле внимания сон и режим, чтобы видеть связь между недосыпом, тягой к еде и общим состоянием.</p>
+          </div>
+        </div>
+        <div class="step glass">
+          <div class="step-no">6</div>
+          <div>
+            <h4>AI-помощник по питанию и тренировкам</h4>
+            <p>Сервис можно использовать и как помощника, когда нужно быстро понять, что съесть, как добрать белок или как упростить питание в обычной жизни.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>Как это работает для пользователя</h2>
+      <div class="sub">Путь максимально простой и понятный. Без сложного обучения и без ощущения, что нужно стать бухгалтером своей еды.</div>
+      <div class="grid-2">
+        <div class="card glass">
+          <div class="icon">A</div>
+          <h3>Шаг 1. Заполнение анкеты</h3>
+          <p>Сначала человек указывает базовые данные и цель. После этого получает дневной ориентир по калориям и БЖУ.</p>
+        </div>
+        <div class="card glass">
+          <div class="icon">B</div>
+          <h3>Шаг 2. Начало фиксации</h3>
+          <p>Дальше он фотографирует еду или пишет, что съел. Это занимает минимум времени и не требует ручного подсчёта.</p>
+        </div>
+        <div class="card glass">
+          <div class="icon">C</div>
+          <h3>Шаг 3. Видит картину дня</h3>
+          <p>Появляется понимание: где реальный перебор, где не хватает сытости, где проблема не в “силе воли”, а в повседневных мелочах.</p>
+        </div>
+        <div class="card glass">
+          <div class="icon">D</div>
+          <h3>Шаг 4. Использует конструктор</h3>
+          <p>Если непонятно, что есть дальше, сервис помогает собрать нормальный вариант из привычных продуктов без усложнения.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>Для кого это полезно</h2>
+      <div class="grid-3">
+        <div class="card glass">
+          <div class="icon">L</div>
+          <h3>Для обычного человека</h3>
+          <p>Если хочется навести порядок в питании, понять, почему вес стоит, и перестать жить в режиме “вроде ем нормально, но результата нет”.</p>
+        </div>
+        <div class="card glass">
+          <div class="icon">C</div>
+          <h3>Для клиентов на сопровождении</h3>
+          <p>Если нужен простой способ фиксировать питание, видеть день и не терять фокус между консультациями или тренировками.</p>
+        </div>
+        <div class="card glass">
+          <div class="icon">P</div>
+          <h3>Для специалистов и тренеров</h3>
+          <p>Если нужен дополнительный инструмент, который помогает клиенту держать питание и делает сопровождение более понятным и современным.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>Почему это может быть интересно фитнес-клубу</h2>
+      <div class="sub">Не как замена тренировкам, а как дополнительный слой ценности и сопровождения между посещениями клуба.</div>
+      <div class="compare">
+        <div class="card glass soft">
+          <h3>Что даёт сам клуб</h3>
+          <ul>
+            <li>Тренировки, оборудование и пространство</li>
+            <li>Работу тренеров и методику нагрузки</li>
+            <li>Дисциплину, ритм и регулярность посещений</li>
+          </ul>
+        </div>
+        <div class="card glass good">
+          <h3>Что может добавить Корти</h3>
+          <ul>
+            <li>Контроль питания между тренировками</li>
+            <li>Дополнительную ценность для клиента</li>
+            <li>Основание для допродажи digital-сервиса или сопровождения</li>
+          </ul>
+        </div>
+      </div>
+      <div class="final glass">
+        <h2 style="font-size:32px;">Корти можно использовать как отдельный сервис, как часть сопровождения или как дополнительный оффер для клиентов клуба</h2>
+        <p>Это не конфликт с залом, а спокойное дополнение: клуб закрывает активность и тренировки, а Корти помогает клиенту держать питание и не выпадать из процесса между визитами.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Корти • AI-сервис — счётчик калорий и конструктор питания
+  </footer>
+</body>
+</html>
