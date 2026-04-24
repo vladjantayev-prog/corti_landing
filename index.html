@@ -5,181 +5,459 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Корти — AI-сервис: счётчик калорий и конструктор питания</title>
   <style>
-    :root{
-      --bg:#0b1020;
-      --bg2:#121a31;
-      --panel:rgba(255,255,255,.08);
-      --panel-2:rgba(255,255,255,.05);
-      --line:rgba(255,255,255,.12);
-      --text:#eef2ff;
-      --muted:#b7c0db;
-      --accent:#7dd3fc;
-      --accent2:#a78bfa;
-      --success:#86efac;
-      --shadow:0 24px 80px rgba(0,0,0,.34);
-      --radius:28px;
-      --max:1200px;
+    :root {
+      --bg: #f4f7fb;
+      --bg-soft: #eef3f9;
+      --card: rgba(255,255,255,0.72);
+      --card-solid: #ffffff;
+      --line: rgba(24, 39, 75, 0.08);
+      --text: #101828;
+      --muted: #667085;
+      --accent: #4da3ff;
+      --accent-2: #7b8cff;
+      --accent-soft: rgba(77,163,255,0.10);
+      --shadow: 0 20px 50px rgba(16, 24, 40, 0.08);
+      --shadow-soft: 0 10px 30px rgba(16, 24, 40, 0.05);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --max: 1180px;
     }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0;
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color:var(--text);
+      color: var(--text);
       background:
-        radial-gradient(circle at 12% 16%, rgba(125,211,252,.12), transparent 24%),
-        radial-gradient(circle at 82% 10%, rgba(167,139,250,.14), transparent 22%),
-        linear-gradient(180deg,var(--bg),var(--bg2));
-      line-height:1.58;
-      letter-spacing:-.01em;
+        radial-gradient(circle at 10% 10%, rgba(77,163,255,0.12), transparent 22%),
+        radial-gradient(circle at 90% 0%, rgba(123,140,255,0.12), transparent 18%),
+        linear-gradient(180deg, #f7faff 0%, #edf3fb 100%);
+      line-height: 1.58;
+      letter-spacing: -0.01em;
     }
-    .wrap{width:min(var(--max),calc(100% - 32px));margin:0 auto}
-    .section{padding:84px 0}
-    .hero{padding:28px 0 76px}
-    .brand{
-      display:inline-flex;align-items:center;gap:12px;
-      font-weight:800;letter-spacing:.2px
+
+    img {
+      max-width: 100%;
+      display: block;
     }
-    .logo{
-      width:42px;height:42px;border-radius:14px;
-      background:linear-gradient(135deg,var(--accent),var(--accent2));
-      display:grid;place-items:center;
-      color:#08111f;font-weight:900;box-shadow:var(--shadow)
+
+    .wrap {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
     }
-    .eyebrow{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:9px 13px;border-radius:999px;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.1);
-      color:var(--muted);font-size:14px
+
+    .section {
+      padding: 84px 0;
     }
-    .glass{
-      background:var(--panel);
-      border:1px solid var(--line);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-      box-shadow:var(--shadow);
-      border-radius:var(--radius);
+
+    .hero {
+      padding: 28px 0 72px;
     }
-    .hero-grid{
-      display:grid;grid-template-columns:1.06fr .94fr;
-      gap:28px;align-items:center;margin-top:26px
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      margin-bottom: 24px;
     }
-    h1{
-      margin:18px 0 18px;
-      font-size:clamp(36px,5vw,66px);
-      line-height:1.02;
-      letter-spacing:-.05em
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      font-weight: 900;
+      box-shadow: var(--shadow-soft);
     }
-    .lead{
-      color:var(--muted);
-      font-size:clamp(18px,2.1vw,21px);
-      max-width:760px
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
-    .hero-note{
-      margin-top:16px;color:var(--muted);font-size:15px
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.06fr 0.94fr;
+      gap: 34px;
+      align-items: center;
     }
-    .hero-card{padding:26px;position:relative;overflow:hidden}
-    .hero-card:before{
-      content:"";position:absolute;inset:-20% auto auto -8%;
-      width:260px;height:260px;
-      background:radial-gradient(circle,rgba(125,211,252,.17),transparent 60%);
-      pointer-events:none
+
+    h1 {
+      margin: 18px 0 18px;
+      font-size: clamp(36px, 5vw, 64px);
+      line-height: 1.02;
+      letter-spacing: -0.05em;
     }
-    .phone-stage{
-      display:grid;grid-template-columns:1fr 160px;
-      gap:16px;align-items:end
+
+    .lead {
+      font-size: clamp(18px, 2vw, 21px);
+      color: var(--muted);
+      max-width: 760px;
     }
-    .phone-big,.phone-small{
-      position:relative;
-      border-radius:34px;
-      padding:10px;
-      background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.06));
-      border:1px solid rgba(255,255,255,.14);
-      box-shadow:0 18px 50px rgba(0,0,0,.28)
+
+    .hero-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 760px;
     }
-    .phone-big img,.phone-small img{
-      display:block;width:100%;height:auto;border-radius:26px
+
+    .glass {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.6);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius-xl);
     }
-    .phone-small{transform:translateY(20px)}
-    .stats{
-      display:grid;grid-template-columns:repeat(4,1fr);
-      gap:14px;margin-top:34px
+
+    .hero-card {
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      min-height: 560px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .stat{padding:20px}
-    .stat strong{display:block;font-size:26px;margin-bottom:4px}
-    .stat span{color:var(--muted)}
-    h2{
-      margin:0 0 14px;
-      font-size:clamp(30px,4vw,48px);
-      line-height:1.08;
-      letter-spacing:-.04em
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: auto auto -120px -120px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(77,163,255,0.14), transparent 70%);
+      pointer-events: none;
     }
-    .sub{
-      color:var(--muted);
-      max-width:940px;
-      font-size:18px
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      inset: 40px -60px auto auto;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(123,140,255,0.12), transparent 70%);
+      pointer-events: none;
     }
-    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:30px}
-    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:28px}
-    .card{padding:24px}
-    .card h3{margin:0 0 10px;font-size:22px;letter-spacing:-.02em}
-    .card p,.card li{color:var(--muted)}
-    .card ul{margin:12px 0 0 18px;padding:0}
-    .icon{
-      width:44px;height:44px;border-radius:14px;
-      display:grid;place-items:center;
-      background:rgba(125,211,252,.12);
-      color:var(--accent);font-weight:900;
-      margin-bottom:14px;border:1px solid rgba(125,211,252,.18)
+
+    .phone-frame {
+      width: min(100%, 360px);
+      margin: 0 auto;
+      padding: 12px;
+      border-radius: 42px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.95), rgba(240,244,250,0.92));
+      box-shadow:
+        0 20px 40px rgba(16,24,40,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.9);
+      border: 1px solid rgba(16,24,40,0.06);
+      position: relative;
     }
-    .steps{display:grid;gap:14px;margin-top:26px}
-    .step{
-      display:grid;grid-template-columns:72px 1fr;
-      gap:18px;align-items:start;padding:22px
+
+    .phone-frame::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 24px;
+      border-radius: 0 0 18px 18px;
+      background: #0f1728;
+      z-index: 3;
     }
-    .step-no{
-      width:56px;height:56px;border-radius:18px;display:grid;place-items:center;
-      background:linear-gradient(135deg,rgba(125,211,252,.18),rgba(167,139,250,.18));
-      border:1px solid rgba(255,255,255,.12);font-size:22px;font-weight:800
+
+    .phone-screen {
+      border-radius: 32px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f8fbff, #eff5fb);
+      min-height: 720px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .step h4{margin:4px 0 8px;font-size:22px}
-    .step p{margin:0;color:var(--muted)}
-    .mockup-band{
-      display:grid;grid-template-columns:1.1fr .9fr;
-      gap:22px;align-items:center;margin-top:32px
+
+    .phone-screen img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
     }
-    .mockups{
-      display:grid;grid-template-columns:repeat(3,1fr);gap:16px
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 34px;
     }
-    .device{
-      padding:10px;border-radius:30px;
-      background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.06));
-      border:1px solid rgba(255,255,255,.14);
-      box-shadow:0 16px 40px rgba(0,0,0,.24)
+
+    .stat {
+      padding: 22px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow-soft);
     }
-    .device img{display:block;width:100%;border-radius:22px}
-    .list{display:grid;gap:10px;margin-top:16px}
-    .list .item{
-      padding:14px 16px;border-radius:18px;background:var(--panel-2);
-      border:1px solid rgba(255,255,255,.08);color:var(--muted)
+
+    .stat strong {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 6px;
+      letter-spacing: -0.03em;
     }
-    .compare{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:28px}
-    .soft h3{color:#c4b5fd}
-    .good h3{color:var(--success)}
-    .final{
-      text-align:center;padding:34px;margin-top:28px
+
+    .stat span {
+      color: var(--muted);
+      font-size: 15px;
     }
-    .final p{color:var(--muted);max-width:860px;margin:12px auto 0}
-    footer{
-      padding:30px 0 50px;color:#98a3c8;font-size:14px;text-align:center
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
     }
-    @media (max-width:1040px){
-      .hero-grid,.stats,.grid-3,.grid-2,.compare,.mockup-band{grid-template-columns:1fr}
-      .phone-stage{grid-template-columns:1fr 120px}
-      .mockups{grid-template-columns:1fr}
-      .section{padding:58px 0}
-      .hero{padding-bottom:42px}
+
+    .sub {
+      max-width: 920px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 30px;
+    }
+
+    .card {
+      padding: 26px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+
+    .card p,
+    .card li {
+      color: var(--muted);
+    }
+
+    .card ul {
+      margin: 12px 0 0 18px;
+      padding: 0;
+    }
+
+    .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 900;
+      border: 1px solid rgba(77,163,255,0.14);
+      margin-bottom: 14px;
+    }
+
+    .steps {
+      display: grid;
+      gap: 14px;
+      margin-top: 26px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 18px;
+      align-items: start;
+      padding: 24px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .step-no {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent);
+      background: linear-gradient(135deg, rgba(77,163,255,0.12), rgba(123,140,255,0.10));
+      border: 1px solid rgba(77,163,255,0.10);
+    }
+
+    .step h4 {
+      margin: 4px 0 8px;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+
+    .step p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin-top: 32px;
+    }
+
+    .showcase-item {
+      padding: 20px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .showcase-item h3 {
+      margin: 18px 0 8px;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+
+    .showcase-item p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .mini-phone {
+      max-width: 280px;
+      margin: 0 auto;
+      padding: 10px;
+      border-radius: 34px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(240,244,250,0.94));
+      border: 1px solid rgba(16,24,40,0.06);
+      box-shadow: 0 16px 36px rgba(16,24,40,0.08);
+      position: relative;
+    }
+
+    .mini-phone::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 92px;
+      height: 18px;
+      border-radius: 0 0 16px 16px;
+      background: #0f1728;
+      z-index: 3;
+    }
+
+    .mini-screen {
+      border-radius: 24px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f8fbff, #eff5fb);
+    }
+
+    .mini-screen img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .soft h3 { color: #6f6cf6; }
+    .good h3 { color: #1f9d55; }
+
+    .final {
+      margin-top: 28px;
+      padding: 34px;
+      text-align: center;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .final p {
+      max-width: 840px;
+      margin: 12px auto 0;
+      color: var(--muted);
+    }
+
+    footer {
+      padding: 28px 0 46px;
+      color: #98a2b3;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    @media (max-width: 1040px) {
+      .hero-grid,
+      .stats,
+      .grid-2,
+      .grid-3,
+      .showcase-grid,
+      .compare {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-card {
+        min-height: auto;
+      }
+
+      .phone-screen {
+        min-height: auto;
+      }
+
+      .section {
+        padding: 58px 0;
+      }
+
+      .hero {
+        padding-bottom: 42px;
+      }
     }
   </style>
 </head>
@@ -189,16 +467,16 @@
       <div class="logo">K</div>
       <div>
         <div>Корти</div>
-        <div style="font-size:12px;color:#9aa5c7;font-weight:600;">AI-сервис: счётчик калорий и конструктор питания</div>
+        <div style="font-size:12px;color:#98a2b3;font-weight:600;">AI-сервис: счётчик калорий и конструктор питания</div>
       </div>
     </div>
 
     <div class="hero-grid">
       <div>
-        <div class="eyebrow">Питание без ручного подсчёта и ежедневного хаоса</div>
+        <div class="eyebrow">Питание без ручного подсчёта, тревоги и ежедневного хаоса</div>
         <h1>Сервис, который помогает понять, что вы реально едите, и собрать питание проще</h1>
         <div class="lead">
-          Корти помогает видеть дневной баланс по калориям и БЖУ, анализировать еду по фото, собирать приёмы пищи через конструктор и понимать, что мешает прогрессу — без жёстких диет, тревоги и ручных таблиц.
+          Корти помогает видеть дневной баланс по калориям и БЖУ, анализировать еду по фото, собирать приёмы пищи через конструктор и понимать, что мешает прогрессу — без жёстких диет, ручных таблиц и постоянного чувства вины вокруг еды.
         </div>
         <div class="hero-note">
           Это не просто счётчик калорий. Это сервис, который сочетает AI-анализ еды по фото, конструктор питания, итог дня, дневник и AI-помощника по питанию и тренировкам.
@@ -206,22 +484,31 @@
       </div>
 
       <div class="hero-card glass">
-        <div class="phone-stage">
-          <div class="phone-big">
-            <img src="main.jpeg" alt="Главный экран Корти" />
-          </div>
-          <div class="phone-small">
-            <img src="constructor.jpeg" alt="Конструктор питания Корти" />
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <img src="main.png" alt="Главный экран Корти">
           </div>
         </div>
       </div>
     </div>
 
     <div class="stats">
-      <div class="stat glass"><strong>Фото еды</strong><span>или текстом — без ручного калькулятора</span></div>
-      <div class="stat glass"><strong>Итог дня</strong><span>видно, сколько уже набрано и сколько осталось</span></div>
-      <div class="stat glass"><strong>Конструктор</strong><span>подсказывает, что добавить для баланса</span></div>
-      <div class="stat glass"><strong>AI-помощник</strong><span>отвечает на вопросы по питанию и тренировкам</span></div>
+      <div class="stat">
+        <strong>Анализ по фото</strong>
+        <span>Еда разбирается по калориям и БЖУ и сразу попадает в дневник</span>
+      </div>
+      <div class="stat">
+        <strong>Итог дня</strong>
+        <span>Сразу видно, сколько уже набрано и сколько ещё осталось</span>
+      </div>
+      <div class="stat">
+        <strong>Конструктор</strong>
+        <span>Подсказывает, как собрать приём пищи из обычных продуктов</span>
+      </div>
+      <div class="stat">
+        <strong>AI-помощник</strong>
+        <span>Можно задавать вопросы по питанию, еде и тренировкам</span>
+      </div>
     </div>
   </div>
 
@@ -233,22 +520,22 @@
       </div>
 
       <div class="grid-2">
-        <div class="card glass">
+        <div class="card">
           <div class="icon">01</div>
           <h3>Анализ еды по фото</h3>
           <p>Пользователь отправляет фото блюда и получает разбор по калориям и БЖУ плюс небольшую подсказку, что можно улучшить. Всё автоматически записывается в дневник питания и итог дня.</p>
         </div>
-        <div class="card glass">
+        <div class="card">
           <div class="icon">02</div>
           <h3>AI-помощник Корти</h3>
           <p>В сервисе можно задавать вопросы по питанию и тренировкам: что съесть, как добрать белок, как упростить питание, что лучше выбрать дома, в кафе или на доставке.</p>
         </div>
-        <div class="card glass">
+        <div class="card">
           <div class="icon">03</div>
           <h3>Конструктор питания</h3>
           <p>Помогает собрать приём пищи из того, что есть дома, или понять, что заказать в кафе и на доставке. Не нужно искать «идеальные рецепты» — сервис работает с обычной жизнью.</p>
         </div>
-        <div class="card glass">
+        <div class="card">
           <div class="icon">04</div>
           <h3>Трекер калорий и итог дня</h3>
           <p>Пользователь видит, сколько уже набрано и сколько осталось по калориям и БЖУ. Это помогает понять, что стоит добавить: белок, клетчатку, полезные жиры — без лишних подсчётов вручную.</p>
@@ -260,24 +547,26 @@
   <section class="section">
     <div class="wrap">
       <h2>Как пользоваться Корти</h2>
-      <div class="sub">Старт занимает буквально несколько минут. После этого можно выбрать сценарий, который удобнее именно в этот момент.</div>
+      <div class="sub">
+        Старт занимает буквально несколько минут. После этого можно выбрать сценарий, который удобнее именно в этот момент.
+      </div>
 
       <div class="steps">
-        <div class="step glass">
+        <div class="step">
           <div class="step-no">1</div>
           <div>
             <h4>Заполнить профиль</h4>
             <p>Пользователь указывает цель, рост, вес и базовые данные. После этого Корти показывает дневной план под цель: сколько калорий и БЖУ нужно на день.</p>
           </div>
         </div>
-        <div class="step glass">
+        <div class="step">
           <div class="step-no">2</div>
           <div>
             <h4>Выбрать удобный сценарий</h4>
             <p><strong>Вариант A:</strong> открыть конструктор и собрать один приём пищи из того, что есть дома или что хочется заказать.<br><strong>Вариант B:</strong> отправить фото готовой еды и быстро понять, что это по калориям и БЖУ.<br><strong>Вариант C:</strong> добавить приём пищи вручную, если данные уже известны или нужно быстро отметить перекус.</p>
           </div>
         </div>
-        <div class="step glass">
+        <div class="step">
           <div class="step-no">3</div>
           <div>
             <h4>В конце дня посмотреть дневник</h4>
@@ -285,20 +574,45 @@
           </div>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="mockup-band">
-        <div class="mockups">
-          <div class="device"><img src="main.jpeg" alt="Главный экран Корти" /></div>
-          <div class="device"><img src="constructor.jpeg" alt="Конструктор питания Корти" /></div>
-          <div class="device"><img src="aichat.jpeg" alt="AI-чат Корти" /></div>
-        </div>
-        <div>
-          <h3 style="margin:0 0 10px;font-size:28px;letter-spacing:-.03em;">Три главных экрана, которые закрывают повседневные задачи</h3>
-          <div class="list">
-            <div class="item"><strong style="color:var(--text)">Главный экран</strong> — видно итог дня, дневной план и остаток по калориям и БЖУ.</div>
-            <div class="item"><strong style="color:var(--text)">Конструктор</strong> — помогает быстро собрать сбалансированный приём пищи.</div>
-            <div class="item"><strong style="color:var(--text)">AI-чат</strong> — можно уточнить под ситуацию, что лучше съесть и как скорректировать день.</div>
+  <section class="section">
+    <div class="wrap">
+      <h2>Как выглядит сервис</h2>
+      <div class="sub">
+        Основная логика Корти — сделать путь максимально понятным: увидеть свой день, собрать нормальный приём пищи и быстро разобраться с готовой едой по фото.
+      </div>
+
+      <div class="showcase-grid">
+        <div class="showcase-item">
+          <div class="mini-phone">
+            <div class="mini-screen">
+              <img src="main.png" alt="Главный экран Корти">
+            </div>
           </div>
+          <h3>Главный экран и итог дня</h3>
+          <p>На главном экране видно, сколько уже набрано и сколько осталось по калориям и БЖУ. Это даёт ясность без ручного учёта.</p>
+        </div>
+
+        <div class="showcase-item">
+          <div class="mini-phone">
+            <div class="mini-screen">
+              <img src="constructor.png" alt="Конструктор питания Корти">
+            </div>
+          </div>
+          <h3>Конструктор питания</h3>
+          <p>Конструктор помогает быстро собрать сбалансированный приём пищи и понять, чего не хватает по белку, клетчатке, углеводам и жирам.</p>
+        </div>
+
+        <div class="showcase-item">
+          <div class="mini-phone">
+            <div class="mini-screen">
+              <img src="aichat.png" alt="AI-анализ блюда Корти">
+            </div>
+          </div>
+          <h3>AI-анализ еды</h3>
+          <p>По фото сервис оценивает калории и БЖУ, даёт краткую подсказку и сразу добавляет блюдо в дневной учёт.</p>
         </div>
       </div>
     </div>
@@ -312,17 +626,17 @@
       </div>
 
       <div class="grid-3">
-        <div class="card glass">
+        <div class="card">
           <div class="icon">A</div>
           <h3>Не меню «для похудения», а понятная схема</h3>
           <p>Суть не в специальных рецептах. Суть в том, чтобы собрать приём пищи из нормальных деталей: белок + овощи/клетчатка + по ситуации гарнир/углеводы + немного полезных жиров.</p>
         </div>
-        <div class="card glass">
+        <div class="card">
           <div class="icon">B</div>
           <h3>Быстро и гибко</h3>
           <p>Не нужно готовить строго по инструкции. Можно выбирать из того, что есть дома, или из того, что доступно в кафе и доставке. На сборку уходит 1–2 минуты.</p>
         </div>
-        <div class="card glass">
+        <div class="card">
           <div class="icon">C</div>
           <h3>Понятно, что добавить</h3>
           <p>Если по дню чего-то не хватает, сервис это показывает. Видно остаток по КБЖУ и появляются простые подсказки: добавить белок, овощи, полезные жиры или остановиться, если уже достаточно.</p>
@@ -330,12 +644,12 @@
       </div>
 
       <div class="grid-2">
-        <div class="card glass">
+        <div class="card">
           <div class="icon">D</div>
           <h3>Меньше тревоги вокруг еды</h3>
           <p>Не нужно жить в режиме строгих запретов и бояться каждого продукта. Даже сладкое можно спокойно вписать в день, увидеть остаток по КБЖУ и не уходить в чувство вины.</p>
         </div>
-        <div class="card glass">
+        <div class="card">
           <div class="icon">E</div>
           <h3>Более стабильный результат</h3>
           <p>Когда питание собирается по понятной схеме, его легче выдерживать. А значит, меньше хаоса, меньше качелей и выше шанс, что человек увидит реальный прогресс, а не только краткий всплеск мотивации.</p>
@@ -348,7 +662,7 @@
     <div class="wrap">
       <h2>Что это даёт человеку</h2>
       <div class="grid-2">
-        <div class="card glass">
+        <div class="card">
           <div class="icon">01</div>
           <h3>Ясность вместо догадок</h3>
           <ul>
@@ -358,7 +672,7 @@
             <li>Что даёт самый быстрый эффект уже сегодня</li>
           </ul>
         </div>
-        <div class="card glass">
+        <div class="card">
           <div class="icon">02</div>
           <h3>Более спокойный контроль</h3>
           <ul>
@@ -375,10 +689,12 @@
   <section class="section">
     <div class="wrap">
       <h2>Почему это может быть интересно фитнес-клубам, нутрициологам и тренерам</h2>
-      <div class="sub">Не как замена их работе, а как дополнительный цифровой слой, который помогает человеку держать питание и привычки между тренировками, консультациями и очными встречами.</div>
+      <div class="sub">
+        Не как замена их работе, а как дополнительный цифровой слой, который помогает человеку держать питание и привычки между тренировками, консультациями и очными встречами.
+      </div>
 
       <div class="compare">
-        <div class="card glass soft">
+        <div class="card soft">
           <h3>Для клиента</h3>
           <ul>
             <li>Больше ощущения сопровождения и структуры</li>
@@ -386,7 +702,7 @@
             <li>Выше шанс увидеть результат и не бросить путь</li>
           </ul>
         </div>
-        <div class="card glass good">
+        <div class="card good">
           <h3>Для специалиста или клуба</h3>
           <ul>
             <li>Дополнительная ценность для клиента</li>
@@ -396,9 +712,11 @@
         </div>
       </div>
 
-      <div class="final glass">
+      <div class="final">
         <h2 style="font-size:32px;">Корти можно использовать как самостоятельный сервис, как часть сопровождения или как дополнительный оффер внутри фитнеса и wellness</h2>
-        <p>Он не заменяет тренировки, консультации или работу тренера. Он добавляет то, чего часто не хватает между ними: понятную систему питания, фиксацию реальной картины дня и более стабильную вовлечённость человека в процесс.</p>
+        <p>
+          Он не заменяет тренировки, консультации или работу тренера. Он добавляет то, чего часто не хватает между ними: понятную систему питания, фиксацию реальной картины дня и более стабильную вовлечённость человека в процесс.
+        </p>
       </div>
     </div>
   </section>
